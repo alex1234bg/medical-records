@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Register – Medical Records</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        :root {
+            --accent:  #1a73e8; --accent-h: #1557b0;
+            --border:  #dadce0;
+            --surface: #f8f9fa;
+            --ink:     #202124; --ink-dim: #5f6368;
+            --err-bg:  #fce8e6; --err-text: #c5221f;
+            --card-r:  14px;    --btn-r: 8px;  --input-r: 8px;
+            --font:    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        body { font-family: var(--font); background: var(--surface); color: var(--ink); min-height: 100vh; }
+        .auth-card {
+            border: 1px solid var(--border);
+            border-radius: var(--card-r);
+            box-shadow: 0 2px 6px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06);
+            background: #fff;
+            padding: 2.25rem 2rem;
+        }
+        .brand { font-size: 1rem; font-weight: 700; color: var(--accent); letter-spacing: -0.01em; margin-bottom: 0.25rem; }
+        .page-title { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 1.75rem; }
+        .form-label {
+            font-size: 0.73rem; font-weight: 600; color: var(--ink-dim);
+            text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem;
+        }
+        .form-control, .form-select {
+            border: 1px solid var(--border); border-radius: var(--input-r);
+            font-size: 0.875rem; padding: 0.6rem 0.875rem; color: var(--ink);
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent); box-shadow: 0 0 0 3px rgba(26,115,232,.15);
+        }
+        .form-check-input:checked { background-color: var(--accent); border-color: var(--accent); }
+        .form-check-input:focus { box-shadow: 0 0 0 3px rgba(26,115,232,.15); border-color: var(--accent); }
+        .invalid-feedback { font-size: 0.78rem; }
+        .btn-primary {
+            background: var(--accent); border-color: var(--accent);
+            border-radius: var(--btn-r); font-weight: 500; font-size: 0.9rem; padding: 0.6rem;
+        }
+        .btn-primary:hover { background: var(--accent-h); border-color: var(--accent-h); }
+        .alert { border: none; border-radius: 8px; font-size: 0.875rem; }
+        .section-divider { border-color: var(--border); margin: 1.5rem 0 1rem; }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .section-hint { font-size: 0.82rem; color: var(--ink-dim); margin-bottom: 1rem; }
+    </style>
+</head>
+<body class="d-flex align-items-start py-5">
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-sm-10 col-md-7 col-lg-6">
+
+            <div class="auth-card">
+                <div class="text-center mb-4">
+                    <div class="brand">&#9877; Medical Records</div>
+                    <div class="page-title">Create account</div>
+                </div>
+
+                <form th:action="@{/register}" th:object="${registration}" method="post">
+
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control"
+                               th:field="*{username}"
+                               th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'"
+                               autofocus required/>
+                        <div class="invalid-feedback" th:errors="*{username}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control"
+                               th:field="*{password}"
+                               th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'"
+                               required/>
+                        <div class="invalid-feedback" th:errors="*{password}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control"
+                               th:field="*{confirmPassword}"
+                               th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid'"
+                               required/>
+                        <div class="invalid-feedback" th:errors="*{confirmPassword}"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">I am a</label>
+                        <select class="form-select"
+                                th:field="*{role}"
+                                th:classappend="${#fields.hasErrors('role')} ? 'is-invalid'"
+                                onchange="toggleRoleSection(this.value)"
+                                required>
+                            <option value="">— Select role —</option>
+                            <option value="PATIENT">Patient</option>
+                            <option value="DOCTOR">Doctor</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{role}"></div>
+                    </div>
+
+                    <div id="patientSection" style="display:none;">
+                        <hr class="section-divider"/>
+                        <p class="section-hint">Enter your personal details to create your patient record.</p>
+
+                        <div class="mb-3">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" class="form-control"
+                                   th:field="*{patientName}"
+                                   th:classappend="${#fields.hasErrors('patientName')} ? 'is-invalid'"
+                                   placeholder="e.g. Maria Ivanova"/>
+                            <div class="invalid-feedback" th:errors="*{patientName}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">EGN <span style="font-weight:400;text-transform:none;letter-spacing:0">(10 digits)</span></label>
+                            <input type="text" class="form-control"
+                                   th:field="*{patientEgn}"
+                                   th:classappend="${#fields.hasErrors('patientEgn')} ? 'is-invalid'"
+                                   maxlength="10" placeholder="0000000000"/>
+                            <div class="invalid-feedback" th:errors="*{patientEgn}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Personal Doctor <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+                            <select class="form-select"
+                                    th:field="*{personalDoctorId}"
+                                    th:classappend="${#fields.hasErrors('personalDoctorId')} ? 'is-invalid'">
+                                <option value="">— None —</option>
+                                <option th:each="d : ${doctors}"
+                                        th:value="${d.id}"
+                                        th:text="${d.name + ' (' + d.specialty + ')'}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{personalDoctorId}"></div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input"
+                                   th:field="*{patientIsInsured}"/>
+                            <label class="form-check-label" style="font-size:.875rem;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink)"
+                                   th:for="${#ids.prev('patientIsInsured')}">
+                                Insured (covered by NHIF)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="doctorSection" style="display:none;">
+                        <hr class="section-divider"/>
+                        <p class="section-hint">Select your doctor profile added by the administrator.</p>
+
+                        <div class="mb-3">
+                            <label class="form-label">Doctor Profile</label>
+                            <select class="form-select"
+                                    th:field="*{existingDoctorId}"
+                                    th:classappend="${#fields.hasErrors('existingDoctorId')} ? 'is-invalid'">
+                                <option value="">— Select your profile —</option>
+                                <option th:each="d : ${unlinkedDoctors}"
+                                        th:value="${d.id}"
+                                        th:text="${d.name + ' (' + d.specialty + ') – #' + d.uniqueId}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{existingDoctorId}"></div>
+                            <div class="form-text">Only doctors without an existing account are shown.</div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary">Create account</button>
+                    </div>
+                </form>
+
+                <hr class="section-divider"/>
+                <p class="text-center mb-0" style="font-size:.85rem;color:var(--ink-dim)">
+                    Already have an account? <a th:href="@{/login}">Sign in</a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function toggleRoleSection(role) {
+        document.getElementById('patientSection').style.display = (role === 'PATIENT') ? '' : 'none';
+        document.getElementById('doctorSection').style.display  = (role === 'DOCTOR')  ? '' : 'none';
+    }
+    (function () {
+        var role = document.getElementById('role').value;
+        if (role) toggleRoleSection(role);
+    })();
+</script>
+</body>
+</html>

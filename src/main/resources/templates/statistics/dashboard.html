@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/base :: layout(~{::section})}"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<body>
+<section>
+    <h2 class="mb-4">Statistics &amp; Reports</h2>
+
+    <div class="row g-3 mb-5">
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 h-100">
+                <div class="card-body">
+                    <div class="text-muted" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600">Total Paid Out-of-Pocket by Patients</div>
+                    <div class="stat-num text-primary mt-1"
+                         th:text="${#numbers.formatDecimal(totalCost, 1, 2) + ' EUR'}">—</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 h-100">
+                <div class="card-body">
+                    <div class="text-muted" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600">Most Common Diagnosis</div>
+                    <div class="stat-num mt-1" style="font-size:1.1rem;color:#0097a7"
+                         th:text="${mostCommonDiagnosis != null ? mostCommonDiagnosis.code + ' – ' + mostCommonDiagnosis.description : 'No data'}">—</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 h-100">
+                <div class="card-body">
+                    <div class="text-muted" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600">Doctor with Most Sick Leaves</div>
+                    <div class="stat-num mt-1" style="font-size:1.1rem;color:#b06000"
+                         th:text="${topSickLeaveDoctor != null ? topSickLeaveDoctor.name : 'No data'}">—</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 h-100">
+                <div class="card-body">
+                    <div class="text-muted" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;font-weight:600">Month with Most Sick Leaves</div>
+                    <div class="stat-num mt-1" style="font-size:1.1rem;color:#137333"
+                         th:text="${topSickLeaveMonth != null ? topSickLeaveMonth : 'No data'}">—</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row g-4 mb-5">
+
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header">Visits per Doctor</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead>
+                            <tr><th>Doctor</th><th class="text-end">Visits</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#maps.isEmpty(visitsPerDoctor)}">
+                                <td colspan="2" class="text-center text-muted py-2">No data.</td>
+                            </tr>
+                            <tr th:each="entry : ${visitsPerDoctor}">
+                                <td th:text="${entry.key.name}"></td>
+                                <td class="text-end fw-semibold" th:text="${entry.value}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-header">Revenue per Doctor (EUR)</div>
+                <div class="card-body p-0">
+                    <table class="table table-sm table-hover mb-0">
+                        <thead>
+                            <tr><th>Doctor</th><th class="text-end">Amount</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#maps.isEmpty(costsPerDoctor)}">
+                                <td colspan="2" class="text-center text-muted py-2">No data.</td>
+                            </tr>
+                            <tr th:each="entry : ${costsPerDoctor}">
+                                <td th:text="${entry.key.name}"></td>
+                                <td class="text-end" th:text="${#numbers.formatDecimal(entry.value, 1, 2)}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm mb-5">
+        <div class="card-header">Patients per GP</div>
+        <div class="card-body p-0">
+            <table class="table table-sm table-hover mb-0">
+                <thead>
+                    <tr><th>GP</th><th>Specialty</th><th class="text-end">Patient Count</th></tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#maps.isEmpty(patientsPerGP)}">
+                        <td colspan="3" class="text-center text-muted py-2">No GPs found.</td>
+                    </tr>
+                    <tr th:each="entry : ${patientsPerGP}">
+                        <td th:text="${entry.key.name}"></td>
+                        <td th:text="${entry.key.specialty}"></td>
+                        <td class="text-end fw-semibold" th:text="${#lists.size(entry.value)}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">Patients by Diagnosis</div>
+        <div class="card-body">
+            <form method="get" th:action="@{/statistics}" class="row g-2 align-items-end">
+                <div class="col-md-8">
+                    <label class="form-label">Diagnosis</label>
+                    <select class="form-select" name="diagnosisId">
+                        <option value="">— Select —</option>
+                        <option th:each="diag : ${allDiagnoses}"
+                                th:value="${diag.id}"
+                                th:text="${diag.code + ' – ' + diag.description}"
+                                th:selected="${selectedDiagnosis != null and selectedDiagnosis.id == diag.id}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-auto">
+                    <button type="submit" class="btn btn-outline-primary">Search</button>
+                </div>
+            </form>
+
+            <div th:if="${patientsWithDiagnosis != null}" class="mt-3">
+                <p class="mb-2 text-muted small"
+                   th:text="'Results for: ' + ${selectedDiagnosis.code}"></p>
+                <table class="table table-sm table-hover mb-0">
+                    <thead>
+                        <tr><th>Name</th><th>EGN</th><th>Insured</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(patientsWithDiagnosis)}">
+                            <td colspan="3" class="text-muted text-center py-2">No patients found.</td>
+                        </tr>
+                        <tr th:each="p : ${patientsWithDiagnosis}">
+                            <td th:text="${p.name}"></td>
+                            <td th:text="${p.egn}"></td>
+                            <td>
+                                <span th:if="${p.insured}" class="badge bg-success">Yes</span>
+                                <span th:unless="${p.insured}" class="badge bg-danger">No</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">Patient Visit History</div>
+        <div class="card-body">
+            <form method="get" th:action="@{/statistics}" class="row g-2 align-items-end">
+                <div class="col-md-8">
+                    <label class="form-label">Patient</label>
+                    <select class="form-select" name="patientId">
+                        <option value="">— Select —</option>
+                        <option th:each="p : ${allPatients}"
+                                th:value="${p.id}"
+                                th:text="${p.name + ' (' + p.egn + ')'}"
+                                th:selected="${selectedPatient != null and selectedPatient.id == p.id}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-auto">
+                    <button type="submit" class="btn btn-outline-primary">Search</button>
+                </div>
+            </form>
+
+            <div th:if="${patientHistory != null}" class="mt-3">
+                <p class="mb-2 text-muted small"
+                   th:text="'Visit history for: ' + ${selectedPatient.name}"></p>
+                <table class="table table-sm table-hover mb-0">
+                    <thead>
+                        <tr><th>Date</th><th>Doctor</th><th>Diagnosis</th><th>Treatment</th><th>Price</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(patientHistory)}">
+                            <td colspan="5" class="text-muted text-center py-2">No examinations found.</td>
+                        </tr>
+                        <tr th:each="e : ${patientHistory}">
+                            <td th:text="${e.date}"></td>
+                            <td th:text="${e.doctor.name}"></td>
+                            <td><span class="badge bg-info" th:text="${e.diagnosis.code}"></span></td>
+                            <td th:text="${e.treatment}"></td>
+                            <td th:text="${e.price != null ? #numbers.formatDecimal(e.price,1,2) + ' EUR' : 'NHIF'}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">Examinations by Doctor &amp; Period</div>
+        <div class="card-body">
+            <form method="get" th:action="@{/statistics}" class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label">Doctor (optional)</label>
+                    <select class="form-select" name="doctorId">
+                        <option value="">— Any —</option>
+                        <option th:each="d : ${allDoctors}"
+                                th:value="${d.id}"
+                                th:text="${d.name}"
+                                th:selected="${selectedDoctor != null and selectedDoctor.id == d.id}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">From</label>
+                    <input type="date" class="form-control" name="from" th:value="${from}"/>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">To</label>
+                    <input type="date" class="form-control" name="to" th:value="${to}"/>
+                </div>
+                <div class="col-md-auto">
+                    <button type="submit" class="btn btn-outline-primary">Search</button>
+                </div>
+            </form>
+
+            <div th:if="${examsByPeriod != null}" class="mt-3">
+                <table class="table table-sm table-hover mb-0">
+                    <thead>
+                        <tr><th>Date</th><th>Doctor</th><th>Patient</th><th>Diagnosis</th><th>Doctor Fee (EUR)</th><th>Patient Pays (EUR)</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(examsByPeriod)}">
+                            <td colspan="6" class="text-muted text-center py-2">No examinations found.</td>
+                        </tr>
+                        <tr th:each="e : ${examsByPeriod}">
+                            <td th:text="${e.date}"></td>
+                            <td th:text="${e.doctor.name}"></td>
+                            <td th:text="${e.patient.name}"></td>
+                            <td><span class="badge bg-info" th:text="${e.diagnosis.code}"></span></td>
+                            <td th:text="${e.fee != null ? #numbers.formatDecimal(e.fee,1,2) : '—'}"></td>
+                            <td>
+                                <span th:if="${e.price != null and e.price.compareTo(T(java.math.BigDecimal).ZERO) == 0}"
+                                      class="badge bg-success">NHIF</span>
+                                <span th:unless="${e.price != null and e.price.compareTo(T(java.math.BigDecimal).ZERO) == 0}"
+                                      th:text="${e.price != null ? #numbers.formatDecimal(e.price,1,2) + ' EUR' : '—'}"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</section>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/base :: layout(~{::section})}"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<body>
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Sick Leaves</h2>
+        <a th:unless="${isPatient}" th:href="@{/sick-leaves/new}"
+           class="btn btn-primary btn-sm">+ Add Sick Leave</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Start Date</th>
+                        <th>Days</th>
+                        <th>End Date</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Diagnosis</th>
+                        <th th:if="${isAdmin or (linkedDoctorId != null)}">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(sickLeaves)}">
+                        <td colspan="8" class="text-center text-muted py-3">No sick leaves found.</td>
+                    </tr>
+                    <tr th:each="sl : ${sickLeaves}">
+                        <td th:text="${sl.id}"></td>
+                        <td th:text="${sl.startDate}"></td>
+                        <td th:text="${sl.days}"></td>
+                        <td th:text="${sl.startDate.plusDays(sl.days - 1)}"></td>
+                        <td th:text="${sl.patientName}"></td>
+                        <td th:text="${sl.doctorName}"></td>
+                        <td><span class="badge bg-info text-dark" th:text="${sl.diagnosisCode}"></span></td>
+                        <td th:if="${isAdmin or (linkedDoctorId != null and linkedDoctorId.equals(sl.doctorId))}">
+                            <a th:href="@{/sick-leaves/{id}/edit(id=${sl.id})}"
+                               class="btn btn-outline-secondary btn-sm">Edit</a>
+                            <form th:action="@{/sick-leaves/{id}/delete(id=${sl.id})}"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('Delete this sick leave?')">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                        <td th:unless="${isAdmin or (linkedDoctorId != null and linkedDoctorId.equals(sl.doctorId))}"
+                            th:if="${isAdmin or (linkedDoctorId != null)}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/base :: layout(~{::section})}"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<body>
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Diagnoses</h2>
+        <a th:href="@{/diagnoses/new}" class="btn btn-primary btn-sm">+ Add Diagnosis</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Code</th>
+                        <th>Description</th>
+                        <th th:if="${isAdmin}">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(diagnoses)}">
+                        <td colspan="4" class="text-center text-muted py-3">No diagnoses found.</td>
+                    </tr>
+                    <tr th:each="diagnosis : ${diagnoses}">
+                        <td th:text="${diagnosis.id}"></td>
+                        <td><span class="badge bg-info text-dark" th:text="${diagnosis.code}"></span></td>
+                        <td th:text="${diagnosis.description}"></td>
+                        <td th:if="${isAdmin}">
+                            <a th:href="@{/diagnoses/{id}/edit(id=${diagnosis.id})}"
+                               class="btn btn-outline-secondary btn-sm">Edit</a>
+                            <form th:action="@{/diagnoses/{id}/delete(id=${diagnosis.id})}"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('Delete this diagnosis?')">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

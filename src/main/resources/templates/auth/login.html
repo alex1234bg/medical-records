@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sign In – Medical Records</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <style>
+        :root {
+            --accent:      #1a73e8;
+            --accent-h:    #1557b0;
+            --ok-bg:       #e6f4ea; --ok-text:  #137333;
+            --err-bg:      #fce8e6; --err-text: #c5221f;
+            --border:      #dadce0;
+            --surface:     #f8f9fa;
+            --ink:         #202124;
+            --ink-dim:     #5f6368;
+            --card-r:      14px;
+            --btn-r:       8px;
+            --input-r:     8px;
+            --font:        -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            font-family: var(--font);
+            background: var(--surface);
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .auth-card {
+            border: 1px solid var(--border);
+            border-radius: var(--card-r);
+            box-shadow: 0 2px 6px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06);
+            background: #fff;
+            padding: 2.25rem 2rem;
+        }
+        .brand {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: -0.01em;
+            margin-bottom: 0.25rem;
+        }
+        .page-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.75rem;
+        }
+        .form-label {
+            font-size: 0.73rem;
+            font-weight: 600;
+            color: var(--ink-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.3rem;
+        }
+        .form-control {
+            border: 1px solid var(--border);
+            border-radius: var(--input-r);
+            font-size: 0.875rem;
+            padding: 0.6rem 0.875rem;
+            color: var(--ink);
+        }
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(26,115,232,.15);
+        }
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            border-radius: var(--btn-r);
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.6rem;
+        }
+        .btn-primary:hover { background: var(--accent-h); border-color: var(--accent-h); }
+        .alert { border: none; border-radius: 8px; font-size: 0.875rem; }
+        .alert-danger  { background: var(--err-bg); color: var(--err-text); }
+        .alert-success { background: var(--ok-bg);  color: var(--ok-text);  }
+        .divider { border-color: var(--border); }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-sm-8 col-md-5 col-lg-4">
+
+            <div class="auth-card">
+                <div class="text-center mb-4">
+                    <div class="brand">&#9877; Medical Records</div>
+                    <div class="page-title">Sign in</div>
+                </div>
+
+                <div th:if="${param.error}" class="alert alert-danger py-2 mb-3">
+                    Invalid username or password.
+                </div>
+                <div th:if="${param.logout}" class="alert alert-success py-2 mb-3">
+                    You have been signed out.
+                </div>
+                <div th:if="${param.registered}" class="alert alert-success py-2 mb-3">
+                    Account created. You can now sign in.
+                </div>
+
+                <form th:action="@{/login}" method="post">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" id="username" name="username"
+                               class="form-control" autofocus required/>
+                    </div>
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" id="password" name="password"
+                               class="form-control" required/>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Sign in</button>
+                    </div>
+                </form>
+
+                <hr class="divider my-3"/>
+                <p class="text-center mb-0" style="font-size:.85rem;color:var(--ink-dim)">
+                    No account? <a th:href="@{/register}">Create one</a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

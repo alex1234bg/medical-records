@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/base :: layout(~{::section})}"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6"
+      lang="en">
+<body>
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Patients</h2>
+        <a th:href="@{/patients/new}" class="btn btn-primary btn-sm"
+           sec:authorize="hasRole('ADMIN')">+ Add Patient</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>EGN</th>
+                        <th>Personal Doctor</th>
+                        <th>Insured</th>
+                        <th th:unless="${isPatient}" sec:authorize="hasRole('ADMIN')">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(patients)}">
+                        <td colspan="6" class="text-center text-muted py-3">No patients found.</td>
+                    </tr>
+                    <tr th:each="patient : ${patients}">
+                        <td th:text="${patient.id}"></td>
+                        <td th:text="${patient.name}"></td>
+                        <td th:text="${patient.egn}"></td>
+                        <td th:text="${patient.personalDoctorName != null ? patient.personalDoctorName : '—'}"></td>
+                        <td>
+                            <span th:if="${patient.insured}" class="badge bg-success">Yes</span>
+                            <span th:unless="${patient.insured}" class="badge bg-danger">No</span>
+                        </td>
+                        <td th:unless="${isPatient}" sec:authorize="hasRole('ADMIN')">
+                            <a th:href="@{/patients/{id}/edit(id=${patient.id})}"
+                               class="btn btn-outline-secondary btn-sm">Edit</a>
+                            <form th:action="@{/patients/{id}/delete(id=${patient.id})}"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('Delete this patient?')">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

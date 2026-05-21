@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/base :: layout(~{::section})}"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6"
+      lang="en">
+<body>
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Doctors</h2>
+        <a th:href="@{/doctors/new}" class="btn btn-primary btn-sm"
+           sec:authorize="hasRole('ADMIN')">+ Add Doctor</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Unique ID</th>
+                        <th>Name</th>
+                        <th>Specialty</th>
+                        <th>GP</th>
+                        <th sec:authorize="hasRole('ADMIN')">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(doctors)}">
+                        <td colspan="6" class="text-center text-muted py-3">No doctors found.</td>
+                    </tr>
+                    <tr th:each="doctor : ${doctors}">
+                        <td th:text="${doctor.id}"></td>
+                        <td th:text="${doctor.uniqueId}"></td>
+                        <td th:text="${doctor.name}"></td>
+                        <td th:text="${doctor.specialty}"></td>
+                        <td>
+                            <span th:if="${doctor.GP}" class="badge bg-success">Yes</span>
+                            <span th:unless="${doctor.GP}" class="badge bg-secondary">No</span>
+                        </td>
+                        <td sec:authorize="hasRole('ADMIN')">
+                            <a th:href="@{/doctors/{id}/edit(id=${doctor.id})}"
+                               class="btn btn-outline-secondary btn-sm">Edit</a>
+                            <form th:action="@{/doctors/{id}/delete(id=${doctor.id})}"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('Delete this doctor?')">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

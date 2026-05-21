@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/base :: layout(~{::section})}"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<body>
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Examinations</h2>
+        <a th:unless="${isPatient}" th:href="@{/examinations/new}"
+           class="btn btn-primary btn-sm">+ Add Examination</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover table-striped mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Date</th>
+                        <th>Doctor</th>
+                        <th>Patient</th>
+                        <th>Diagnosis</th>
+                        <th>Treatment</th>
+                        <th>Doctor Fee (EUR)</th>
+                        <th>Patient Pays (EUR)</th>
+                        <th th:if="${isAdmin or (linkedDoctorId != null)}">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(examinations)}">
+                        <td colspan="9" class="text-center text-muted py-3">No examinations found.</td>
+                    </tr>
+                    <tr th:each="exam : ${examinations}">
+                        <td th:text="${exam.id}"></td>
+                        <td th:text="${exam.date}"></td>
+                        <td th:text="${exam.doctorName}"></td>
+                        <td th:text="${exam.patientName}"></td>
+                        <td><span class="badge bg-info text-dark" th:text="${exam.diagnosisCode}"></span></td>
+                        <td th:text="${exam.treatment}"></td>
+                        <td th:text="${exam.fee != null ? #numbers.formatDecimal(exam.fee, 1, 2) : '—'}"></td>
+                        <td>
+                            <span th:if="${exam.price != null and exam.price.compareTo(T(java.math.BigDecimal).ZERO) == 0}"
+                                  class="badge bg-success">NHIF</span>
+                            <span th:unless="${exam.price != null and exam.price.compareTo(T(java.math.BigDecimal).ZERO) == 0}"
+                                  th:text="${exam.price != null ? #numbers.formatDecimal(exam.price, 1, 2) : '—'}"></span>
+                        </td>
+                        <td th:if="${isAdmin or (linkedDoctorId != null and linkedDoctorId.equals(exam.doctorId))}">
+                            <a th:href="@{/examinations/{id}/edit(id=${exam.id})}"
+                               class="btn btn-outline-secondary btn-sm">Edit</a>
+                            <form th:action="@{/examinations/{id}/delete(id=${exam.id})}"
+                                  method="post" class="d-inline"
+                                  onsubmit="return confirm('Delete this examination?')">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                        <td th:unless="${isAdmin or (linkedDoctorId != null and linkedDoctorId.equals(exam.doctorId))}"
+                            th:if="${isAdmin or (linkedDoctorId != null)}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+</body>
+</html>

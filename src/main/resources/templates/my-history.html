@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/base :: layout(~{::section})}"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<body>
+<section>
+
+    <h2 class="mb-4">My Medical History</h2>
+
+    <div th:if="${noRecord}" class="alert alert-warning">
+        Your account is not linked to a patient record yet. Please contact an administrator.
+    </div>
+
+    <div th:unless="${noRecord}">
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header">Personal Information</div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <span class="text-muted small d-block" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:600">Full Name</span>
+                        <span th:text="${patient.name}" class="fw-semibold"></span>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-muted small d-block" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:600">EGN</span>
+                        <span th:text="${patient.egn}" class="fw-semibold"></span>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-muted small d-block" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:600">Personal Doctor</span>
+                        <span th:text="${patient.personalDoctorName != null ? patient.personalDoctorName : '—'}" class="fw-semibold"></span>
+                    </div>
+                    <div class="col-sm-6">
+                        <span class="text-muted small d-block" style="font-size:.7rem;text-transform:uppercase;letter-spacing:.05em;font-weight:600">Insurance Status</span>
+                        <span th:if="${patient.insured}" class="badge bg-success" style="font-size:.8rem;padding:.4em 1em">Insured (NHIF)</span>
+                        <span th:unless="${patient.insured}" class="badge bg-danger" style="font-size:.8rem;padding:.4em 1em">Not Insured</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Examinations</span>
+                <span class="badge bg-secondary" th:text="${#lists.size(examinations)}"></span>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Doctor</th>
+                            <th>Diagnosis</th>
+                            <th>Treatment</th>
+                            <th>Patient Pays (EUR)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(examinations)}">
+                            <td colspan="5" class="text-center text-muted py-3">No examinations on record.</td>
+                        </tr>
+                        <tr th:each="exam : ${examinations}">
+                            <td th:text="${exam.date}"></td>
+                            <td th:text="${exam.doctorName}"></td>
+                            <td>
+                                <span class="badge bg-info" th:text="${exam.diagnosisCode}"></span>
+                                <span class="text-muted small ms-1" th:text="${exam.diagnosisDescription}"></span>
+                            </td>
+                            <td th:text="${exam.treatment}"></td>
+                            <td>
+                                <span th:if="${exam.price != null and exam.price.compareTo(T(java.math.BigDecimal).ZERO) == 0}"
+                                      class="badge bg-success">NHIF covered</span>
+                                <span th:unless="${exam.price != null and exam.price.compareTo(T(java.math.BigDecimal).ZERO) == 0}"
+                                      th:text="${#numbers.formatDecimal(exam.price, 1, 2) + ' EUR'}"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Sick Leaves</span>
+                <span class="badge bg-secondary" th:text="${#lists.size(sickLeaves)}"></span>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Start Date</th>
+                            <th>Days</th>
+                            <th>End Date</th>
+                            <th>Doctor</th>
+                            <th>Diagnosis</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(sickLeaves)}">
+                            <td colspan="5" class="text-center text-muted py-3">No sick leaves on record.</td>
+                        </tr>
+                        <tr th:each="sl : ${sickLeaves}">
+                            <td th:text="${sl.startDate}"></td>
+                            <td th:text="${sl.days}"></td>
+                            <td th:text="${sl.startDate.plusDays(sl.days - 1)}"></td>
+                            <td th:text="${sl.doctorName}"></td>
+                            <td>
+                                <span class="badge bg-info" th:text="${sl.diagnosisCode}"></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+</body>
+</html>

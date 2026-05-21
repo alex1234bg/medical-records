@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/base :: layout(~{::section})}"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<body>
+<section>
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0" th:text="${examination.id != null} ? 'Edit Examination' : 'Add Examination'"></h5>
+                </div>
+                <div class="card-body">
+                    <form th:action="${examination.id != null} ? @{/examinations/{id}/update(id=${examination.id})} : @{/examinations/save}"
+                          th:object="${examination}" method="post">
+
+                        <div class="mb-3">
+                            <label class="form-label">Date</label>
+                            <input type="date" class="form-control" th:field="*{date}"
+                                   th:classappend="${#fields.hasErrors('date')} ? 'is-invalid'" required/>
+                            <div class="invalid-feedback" th:errors="*{date}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Doctor</label>
+                            <select class="form-select" name="doctorId"
+                                    th:classappend="${#fields.hasErrors('doctorId')} ? 'is-invalid'" required>
+                                <option value="">— Select Doctor —</option>
+                                <option th:each="doctor : ${doctors}"
+                                        th:value="${doctor.id}"
+                                        th:text="${doctor.name + ' (' + doctor.specialty + ')'}"
+                                        th:selected="${examination.doctorId != null and examination.doctorId.equals(doctor.id)}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{doctorId}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Patient</label>
+                            <select class="form-select" name="patientId"
+                                    th:classappend="${#fields.hasErrors('patientId')} ? 'is-invalid'" required>
+                                <option value="">— Select Patient —</option>
+                                <option th:each="patient : ${patients}"
+                                        th:value="${patient.id}"
+                                        th:text="${patient.name + ' (' + patient.egn + ')'}"
+                                        th:selected="${examination.patientId != null and examination.patientId.equals(patient.id)}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{patientId}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Diagnosis</label>
+                            <select class="form-select" name="diagnosisId"
+                                    th:classappend="${#fields.hasErrors('diagnosisId')} ? 'is-invalid'" required>
+                                <option value="">— Select Diagnosis —</option>
+                                <option th:each="diag : ${diagnoses}"
+                                        th:value="${diag.id}"
+                                        th:text="${diag.code + ' – ' + diag.description}"
+                                        th:selected="${examination.diagnosisId != null and examination.diagnosisId.equals(diag.id)}">
+                                </option>
+                            </select>
+                            <div class="invalid-feedback" th:errors="*{diagnosisId}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Treatment</label>
+                            <textarea class="form-control" th:field="*{treatment}" rows="3"
+                                      th:classappend="${#fields.hasErrors('treatment')} ? 'is-invalid'"></textarea>
+                            <div class="invalid-feedback" th:errors="*{treatment}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Doctor Fee (EUR)</label>
+                            <input type="number" class="form-control" th:field="*{fee}"
+                                   th:classappend="${#fields.hasErrors('fee')} ? 'is-invalid'"
+                                   step="0.01" min="0" placeholder="e.g. 25.00"/>
+                            <div class="invalid-feedback" th:errors="*{fee}"></div>
+                            <div class="form-text">What the doctor receives. Insured patients pay 0 — NHIF covers the fee.</div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <a th:href="@{/examinations}" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>

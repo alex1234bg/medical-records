@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/base :: layout(~{::section})}"
+      xmlns:th="http://www.thymeleaf.org"
+      lang="en">
+<body>
+<section>
+
+    <h2 class="mb-4">My Profile</h2>
+
+    <div th:if="${noRecord}" class="alert alert-warning">
+        Your account is not linked to a patient record yet. Please contact an administrator.
+    </div>
+
+    <div th:unless="${noRecord}">
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <span th:text="${successMessage}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-7">
+                <div class="card shadow-sm">
+                    <div class="card-header fw-semibold">Edit Profile</div>
+                    <div class="card-body">
+                        <form th:action="@{/my-profile/update}" method="post">
+
+                            <div class="mb-3">
+                                <label class="form-label text-muted">Full Name</label>
+                                <input type="text" class="form-control" th:value="${patient.name}" readonly disabled/>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label text-muted">EGN</label>
+                                <input type="text" class="form-control" th:value="${patient.egn}" readonly disabled/>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Personal Doctor (GP)</label>
+                                <select class="form-select" name="personalDoctorId">
+                                    <option value="">— None —</option>
+                                    <option th:each="doc : ${gpDoctors}"
+                                            th:value="${doc.id}"
+                                            th:text="${doc.name + ' (' + doc.specialty + ')'}"
+                                            th:selected="${patient.personalDoctorId != null and patient.personalDoctorId.equals(doc.id)}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="mb-4 form-check">
+                                <input type="checkbox" class="form-check-input" id="insured"
+                                       name="insured" th:checked="${patient.insured}" value="true"/>
+                                <label class="form-check-label" for="insured">Insured (covered by NHIF)</label>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                                <a th:href="@{/my-history}" class="btn btn-outline-secondary">My Medical History</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+</body>
+</html>
