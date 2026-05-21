@@ -200,7 +200,12 @@
                             <td th:text="${e.doctor.name}"></td>
                             <td><span class="badge bg-info" th:text="${e.diagnosis.code}"></span></td>
                             <td th:text="${e.treatment}"></td>
-                            <td th:text="${e.price != null ? #numbers.formatDecimal(e.price,1,2) + ' EUR' : 'NHIF'}"></td>
+                            <td>
+                                <span th:if="${e.price != null and e.price.compareTo(T(java.math.BigDecimal).ZERO) == 0}"
+                                      class="badge bg-success">NHIF</span>
+                                <span th:unless="${e.price != null and e.price.compareTo(T(java.math.BigDecimal).ZERO) == 0}"
+                                      th:text="${e.price != null ? #numbers.formatDecimal(e.price,1,2) + ' EUR' : '—'}"></span>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
