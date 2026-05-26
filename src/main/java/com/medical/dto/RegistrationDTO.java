@@ -31,4 +31,6 @@ public class RegistrationDTO {
     private boolean patientIsInsured;
 
     private Long existingDoctorId;
+
+    private Long existingPatientId;
 }

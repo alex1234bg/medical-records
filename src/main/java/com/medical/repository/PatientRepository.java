@@ -15,4 +15,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
 
     @Query("SELECT DISTINCT e.patient FROM Examination e WHERE e.diagnosis = :diagnosis")
     List<Patient> findByDiagnosis(@Param("diagnosis") Diagnosis diagnosis);
+
+    @Query("SELECT p FROM Patient p WHERE p NOT IN (SELECT u.patient FROM AppUser u WHERE u.patient IS NOT NULL)")
+    List<Patient> findUnlinkedPatients();
 }

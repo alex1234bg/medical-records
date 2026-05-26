@@ -37,6 +37,7 @@ public class AuthController {
         model.addAttribute("registration", new RegistrationDTO());
         model.addAttribute("doctors", doctorRepository.findAll());
         model.addAttribute("unlinkedDoctors", doctorRepository.findUnlinkedDoctors());
+        model.addAttribute("unlinkedPatients", patientRepository.findUnlinkedPatients());
         return "auth/register";
     }
 
@@ -55,11 +56,13 @@ public class AuthController {
         }
 
         if ("PATIENT".equals(dto.getRole())) {
-            if (dto.getPatientName() == null || dto.getPatientName().isBlank()) {
-                result.rejectValue("patientName", "field.required", "Name is required");
-            }
-            if (dto.getPatientEgn() == null || !dto.getPatientEgn().matches("[0-9]{10}")) {
-                result.rejectValue("patientEgn", "field.invalid", "EGN must be exactly 10 digits");
+            if (dto.getExistingPatientId() == null) {
+                if (dto.getPatientName() == null || dto.getPatientName().isBlank()) {
+                    result.rejectValue("patientName", "field.required", "Name is required");
+                }
+                if (dto.getPatientEgn() == null || !dto.getPatientEgn().matches("[0-9]{10}")) {
+                    result.rejectValue("patientEgn", "field.invalid", "EGN must be exactly 10 digits");
+                }
             }
         } else if ("DOCTOR".equals(dto.getRole())) {
             if (dto.getExistingDoctorId() == null) {
@@ -70,20 +73,26 @@ public class AuthController {
         if (result.hasErrors()) {
             model.addAttribute("doctors", doctorRepository.findAll());
             model.addAttribute("unlinkedDoctors", doctorRepository.findUnlinkedDoctors());
+            model.addAttribute("unlinkedPatients", patientRepository.findUnlinkedPatients());
             return "auth/register";
         }
 
         if ("PATIENT".equals(dto.getRole())) {
-            Doctor personalDoctor = dto.getPersonalDoctorId() != null
-                    ? doctorRepository.findById(dto.getPersonalDoctorId()).orElse(null)
-                    : null;
-
-            Patient patient = patientRepository.save(Patient.builder()
-                    .name(dto.getPatientName())
-                    .egn(dto.getPatientEgn())
-                    .personalDoctor(personalDoctor)
-                    .isInsured(dto.isPatientIsInsured())
-                    .build());
+            Patient patient;
+            if (dto.getExistingPatientId() != null) {
+                patient = patientRepository.findById(dto.getExistingPatientId())
+                        .orElseThrow(() -> new IllegalArgumentException("Patient not found"));
+            } else {
+                Doctor personalDoctor = dto.getPersonalDoctorId() != null
+                        ? doctorRepository.findById(dto.getPersonalDoctorId()).orElse(null)
+                        : null;
+                patient = patientRepository.save(Patient.builder()
+                        .name(dto.getPatientName())
+                        .egn(dto.getPatientEgn())
+                        .personalDoctor(personalDoctor)
+                        .isInsured(dto.isPatientIsInsured())
+                        .build());
+            }
 
             appUserRepository.save(AppUser.builder()
                     .username(dto.getUsername())

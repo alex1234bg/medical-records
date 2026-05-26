@@ -108,47 +108,76 @@
 
                     <div id="patientSection" style="display:none;">
                         <hr class="section-divider"/>
-                        <p class="section-hint">Enter your personal details to create your patient record.</p>
-
-                        <div class="mb-3">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" class="form-control"
-                                   th:field="*{patientName}"
-                                   th:classappend="${#fields.hasErrors('patientName')} ? 'is-invalid'"
-                                   placeholder="e.g. Maria Ivanova"/>
-                            <div class="invalid-feedback" th:errors="*{patientName}"></div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">EGN <span style="font-weight:400;text-transform:none;letter-spacing:0">(10 digits)</span></label>
-                            <input type="text" class="form-control"
-                                   th:field="*{patientEgn}"
-                                   th:classappend="${#fields.hasErrors('patientEgn')} ? 'is-invalid'"
-                                   maxlength="10" placeholder="0000000000"/>
-                            <div class="invalid-feedback" th:errors="*{patientEgn}"></div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Personal Doctor <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
-                            <select class="form-select"
-                                    th:field="*{personalDoctorId}"
-                                    th:classappend="${#fields.hasErrors('personalDoctorId')} ? 'is-invalid'">
-                                <option value="">— None —</option>
-                                <option th:each="d : ${doctors}"
-                                        th:value="${d.id}"
-                                        th:text="${d.name + ' (' + d.specialty + ')'}">
-                                </option>
-                            </select>
-                            <div class="invalid-feedback" th:errors="*{personalDoctorId}"></div>
-                        </div>
 
                         <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input"
-                                   th:field="*{patientIsInsured}"/>
-                            <label class="form-check-label" style="font-size:.875rem;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink)"
-                                   th:for="${#ids.prev('patientIsInsured')}">
-                                Insured (covered by NHIF)
+                            <input type="checkbox" class="form-check-input" id="hasExistingRecord"
+                                   onchange="toggleExistingPatient(this.checked)"/>
+                            <label class="form-check-label" for="hasExistingRecord"
+                                   style="font-size:.875rem;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink)">
+                                I already have a patient record in the system
                             </label>
+                        </div>
+
+                        <div id="existingPatientSection" style="display:none;">
+                            <div class="mb-3">
+                                <label class="form-label">Select Your Record</label>
+                                <select class="form-select"
+                                        th:field="*{existingPatientId}"
+                                        th:classappend="${#fields.hasErrors('existingPatientId')} ? 'is-invalid'">
+                                    <option value="">— Select your record —</option>
+                                    <option th:each="p : ${unlinkedPatients}"
+                                            th:value="${p.id}"
+                                            th:text="${p.name + ' (' + p.egn + ')'}">
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback" th:errors="*{existingPatientId}"></div>
+                                <div class="form-text">Only patients without an existing account are shown.</div>
+                            </div>
+                        </div>
+
+                        <div id="newPatientSection">
+                            <p class="section-hint">Enter your personal details to create your patient record.</p>
+
+                            <div class="mb-3">
+                                <label class="form-label">Full Name</label>
+                                <input type="text" class="form-control"
+                                       th:field="*{patientName}"
+                                       th:classappend="${#fields.hasErrors('patientName')} ? 'is-invalid'"
+                                       placeholder="e.g. Maria Ivanova"/>
+                                <div class="invalid-feedback" th:errors="*{patientName}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">EGN <span style="font-weight:400;text-transform:none;letter-spacing:0">(10 digits)</span></label>
+                                <input type="text" class="form-control"
+                                       th:field="*{patientEgn}"
+                                       th:classappend="${#fields.hasErrors('patientEgn')} ? 'is-invalid'"
+                                       maxlength="10" placeholder="0000000000"/>
+                                <div class="invalid-feedback" th:errors="*{patientEgn}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Personal Doctor <span style="font-weight:400;text-transform:none;letter-spacing:0">(optional)</span></label>
+                                <select class="form-select"
+                                        th:field="*{personalDoctorId}"
+                                        th:classappend="${#fields.hasErrors('personalDoctorId')} ? 'is-invalid'">
+                                    <option value="">— None —</option>
+                                    <option th:each="d : ${doctors}"
+                                            th:value="${d.id}"
+                                            th:text="${d.name + ' (' + d.specialty + ')'}">
+                                    </option>
+                                </select>
+                                <div class="invalid-feedback" th:errors="*{personalDoctorId}"></div>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input"
+                                       th:field="*{patientIsInsured}"/>
+                                <label class="form-check-label" style="font-size:.875rem;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink)"
+                                       th:for="${#ids.prev('patientIsInsured')}">
+                                    Insured (covered by NHIF)
+                                </label>
+                            </div>
                         </div>
                     </div>
 
@@ -192,6 +221,10 @@
     function toggleRoleSection(role) {
         document.getElementById('patientSection').style.display = (role === 'PATIENT') ? '' : 'none';
         document.getElementById('doctorSection').style.display  = (role === 'DOCTOR')  ? '' : 'none';
+    }
+    function toggleExistingPatient(checked) {
+        document.getElementById('existingPatientSection').style.display = checked ? '' : 'none';
+        document.getElementById('newPatientSection').style.display      = checked ? 'none' : '';
     }
     (function () {
         var role = document.getElementById('role').value;
