@@ -3,6 +3,7 @@ package com.medical.service;
 import com.medical.entity.Examination;
 import com.medical.entity.Patient;
 import com.medical.entity.SickLeave;
+import com.medical.repository.AppUserRepository;
 import com.medical.repository.ExaminationRepository;
 import com.medical.repository.PatientRepository;
 import com.medical.repository.SickLeaveRepository;
@@ -32,6 +33,9 @@ class PatientServiceTest {
 
     @Mock
     private SickLeaveRepository sickLeaveRepository;
+
+    @Mock
+    private AppUserRepository appUserRepository;
 
     @InjectMocks
     private PatientService patientService;
@@ -93,6 +97,7 @@ class PatientServiceTest {
         SickLeave sickLeave = SickLeave.builder().id(5L).examination(exam).build();
 
         when(patientRepository.findById(1L)).thenReturn(Optional.of(patient));
+        when(appUserRepository.findByPatient(patient)).thenReturn(Optional.empty());
         when(examinationRepository.findByPatient(patient)).thenReturn(List.of(exam));
         when(sickLeaveRepository.findByExamination(exam)).thenReturn(Optional.of(sickLeave));
 
@@ -106,6 +111,7 @@ class PatientServiceTest {
     @Test
     void delete_noExaminations_deletesPatientDirectly() {
         when(patientRepository.findById(1L)).thenReturn(Optional.of(patient));
+        when(appUserRepository.findByPatient(patient)).thenReturn(Optional.empty());
         when(examinationRepository.findByPatient(patient)).thenReturn(List.of());
 
         patientService.delete(1L);

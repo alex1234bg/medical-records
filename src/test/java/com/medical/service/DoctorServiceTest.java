@@ -1,8 +1,10 @@
 package com.medical.service;
 
 import com.medical.entity.Doctor;
+import com.medical.repository.AppUserRepository;
 import com.medical.repository.DoctorRepository;
 import com.medical.repository.ExaminationRepository;
+import com.medical.repository.PatientRepository;
 import com.medical.repository.SickLeaveRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +32,12 @@ class DoctorServiceTest {
 
     @Mock
     private SickLeaveRepository sickLeaveRepository;
+
+    @Mock
+    private PatientRepository patientRepository;
+
+    @Mock
+    private AppUserRepository appUserRepository;
 
     @InjectMocks
     private DoctorService doctorService;
@@ -90,6 +98,8 @@ class DoctorServiceTest {
     @Test
     void delete_noExaminations_deletesDoctor() {
         when(doctorRepository.findById(1L)).thenReturn(Optional.of(doctor));
+        when(patientRepository.findByPersonalDoctor(doctor)).thenReturn(List.of());
+        when(appUserRepository.findByDoctor(doctor)).thenReturn(Optional.empty());
         when(examinationRepository.findByDoctor(doctor)).thenReturn(List.of());
 
         doctorService.delete(1L);

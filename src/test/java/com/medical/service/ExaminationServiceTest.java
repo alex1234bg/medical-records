@@ -64,7 +64,7 @@ class ExaminationServiceTest {
         Examination examination = Examination.builder()
                 .date(LocalDate.now())
                 .patient(uninsuredPatient)
-                .price(new BigDecimal("75.50"))
+                .fee(new BigDecimal("75.50"))
                 .treatment("Medication prescribed")
                 .build();
 
@@ -80,7 +80,7 @@ class ExaminationServiceTest {
         Examination examination = Examination.builder()
                 .date(LocalDate.now())
                 .patient(null)
-                .price(new BigDecimal("30.00"))
+                .fee(new BigDecimal("30.00"))
                 .treatment("Checkup")
                 .build();
 
