@@ -42,6 +42,11 @@ public class SickLeaveController {
                     .map(p -> sickLeaveService.findByPatient(p).stream()
                             .map(mapperService::toDTO).toList())
                     .orElse(List.of());
+        } else if (hasRole(auth, "ROLE_DOCTOR")) {
+            sickLeaves = appUserRepository.findDoctorByUsername(auth.getName())
+                    .map(d -> sickLeaveService.findByDoctor(d).stream()
+                            .map(mapperService::toDTO).toList())
+                    .orElse(List.of());
         } else {
             sickLeaves = sickLeaveService.findAll().stream()
                     .map(mapperService::toDTO).toList();

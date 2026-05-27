@@ -53,7 +53,6 @@ public class MyProfileController {
     @PostMapping("/update")
     public String update(
             @RequestParam(value = "personalDoctorId", required = false) Long personalDoctorId,
-            @RequestParam(value = "insured", defaultValue = "false") boolean insured,
             RedirectAttributes redirectAttributes) {
 
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -63,7 +62,6 @@ public class MyProfileController {
 
         Doctor personalDoctor = (personalDoctorId != null) ? doctorService.findById(personalDoctorId) : null;
         patient.setPersonalDoctor(personalDoctor);
-        patient.setInsured(insured);
         patientService.save(patient);
 
         redirectAttributes.addFlashAttribute("successMessage", "Profile updated successfully.");

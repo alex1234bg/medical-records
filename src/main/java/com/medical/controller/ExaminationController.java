@@ -48,6 +48,11 @@ public class ExaminationController {
                     .map(p -> examinationService.findByPatient(p).stream()
                             .map(mapperService::toDTO).toList())
                     .orElse(List.of());
+        } else if (hasRole(auth, "ROLE_DOCTOR")) {
+            examinations = appUserRepository.findDoctorByUsername(auth.getName())
+                    .map(d -> examinationService.findByDoctor(d).stream()
+                            .map(mapperService::toDTO).toList())
+                    .orElse(List.of());
         } else {
             examinations = examinationService.findAll().stream()
                     .map(mapperService::toDTO).toList();

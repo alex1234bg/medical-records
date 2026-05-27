@@ -1,5 +1,6 @@
 package com.medical.service;
 
+import com.medical.entity.Doctor;
 import com.medical.entity.Patient;
 import com.medical.entity.SickLeave;
 import com.medical.repository.SickLeaveRepository;
@@ -22,6 +23,10 @@ public class SickLeaveService {
 
     public List<SickLeave> findByPatient(Patient patient) {
         return sickLeaveRepository.findByExamination_Patient(patient);
+    }
+
+    public List<SickLeave> findByDoctor(Doctor doctor) {
+        return sickLeaveRepository.findByExamination_Doctor(doctor);
     }
 
     public SickLeave findById(Long id) {
