@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html th:replace="~{layout/base :: layout(~{::section})}"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6"
+      lang="en">
+<body>
+<section>
+
+    <div class="text-center mb-5 mt-3">
+        <div style="font-size:2.5rem; margin-bottom:0.5rem;">&#9877;</div>
+        <h2 style="font-size:1.75rem;">Welcome to Medical Records</h2>
+        <p class="text-muted" style="font-size:0.95rem;">
+            Signed in as <strong sec:authentication="name">user</strong>
+        </p>
+    </div>
+
+    <div class="row justify-content-center g-3">
+
+        <!-- PATIENT cards -->
+        <div class="col-sm-6 col-md-4" sec:authorize="hasRole('PATIENT')">
+            <a th:href="@{/my-history}" class="text-decoration-none">
+                <div class="card h-100 text-center p-3" style="cursor:pointer; transition:box-shadow .15s;"
+                     onmouseover="this.style.boxShadow='0 4px 16px rgba(26,115,232,.18)'"
+                     onmouseout="this.style.boxShadow=''">
+                    <div style="font-size:2rem; margin-bottom:0.5rem;">&#128203;</div>
+                    <div class="fw-600" style="font-weight:600; color:#202124;">My Medical History</div>
+                    <div class="text-muted" style="font-size:0.82rem; margin-top:0.25rem;">View your past examinations and diagnoses</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-sm-6 col-md-4" sec:authorize="hasRole('PATIENT')">
+            <a th:href="@{/my-profile}" class="text-decoration-none">
+                <div class="card h-100 text-center p-3" style="cursor:pointer; transition:box-shadow .15s;"
+                     onmouseover="this.style.boxShadow='0 4px 16px rgba(26,115,232,.18)'"
+                     onmouseout="this.style.boxShadow=''">
+                    <div style="font-size:2rem; margin-bottom:0.5rem;">&#128100;</div>
+                    <div class="fw-600" style="font-weight:600; color:#202124;">My Profile</div>
+                    <div class="text-muted" style="font-size:0.82rem; margin-top:0.25rem;">View your personal and insurance details</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-sm-6 col-md-4" sec:authorize="hasRole('PATIENT')">
+            <a th:href="@{/doctors}" class="text-decoration-none">
+                <div class="card h-100 text-center p-3" style="cursor:pointer; transition:box-shadow .15s;"
+                     onmouseover="this.style.boxShadow='0 4px 16px rgba(26,115,232,.18)'"
+                     onmouseout="this.style.boxShadow=''">
+                    <div style="font-size:2rem; margin-bottom:0.5rem;">&#128084;</div>
+                    <div class="fw-600" style="font-weight:600; color:#202124;">Doctors</div>
+                    <div class="text-muted" style="font-size:0.82rem; margin-top:0.25rem;">Browse the list of available doctors</div>
+                </div>
+            </a>
+        </div>
+
+        <!-- DOCTOR cards -->
+        <div class="col-sm-6 col-md-4" sec:authorize="hasRole('DOCTOR')">
+            <a th:href="@{/doctor-dashboard}" class="text-decoration-none">
+                <div class="card h-100 text-center p-3" style="cursor:pointer; transition:box-shadow .15s;"
+                     onmouseover="this.style.boxShadow='0 4px 16px rgba(26,115,232,.18)'"
+                     onmouseout="this.style.boxShadow=''">
+                    <div style="font-size:2rem; margin-bottom:0.5rem;">&#128202;</div>
+                    <div class="fw-600" style="font-weight:600; color:#202124;">My Dashboard</div>
+                    <div class="text-muted" style="font-size:0.82rem; margin-top:0.25rem;">Your patients and examination statistics</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-sm-6 col-md-4" sec:authorize="hasRole('DOCTOR')">
+            <a th:href="@{/patients}" class="text-decoration-none">
+                <div class="card h-100 text-center p-3" style="cursor:pointer; transition:box-shadow .15s;"
+                     onmouseover="this.style.boxShadow='0 4px 16px rgba(26,115,232,.18)'"
+                     onmouseout="this.style.boxShadow=''">
+                    <div style="font-size:2rem; margin-bottom:0.5rem;">&#128101;</div>
+                    <div class="fw-600" style="font-weight:600; color:#202124;">Patients</div>
+                    <div class="text-muted" style="font-size:0.82rem; margin-top:0.25rem;">Browse and manage patient records</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-sm-6 col-md-4" sec:authorize="hasRole('DOCTOR')">
+            <a th:href="@{/examinations}" class="text-decoration-none">
+                <div class="card h-100 text-center p-3" style="cursor:pointer; transition:box-shadow .15s;"
+                     onmouseover="this.style.boxShadow='0 4px 16px rgba(26,115,232,.18)'"
+                     onmouseout="this.style.boxShadow=''">
+                    <div style="font-size:2rem; margin-bottom:0.5rem;">&#128203;</div>
+                    <div class="fw-600" style="font-weight:600; color:#202124;">Examinations</div>
+                    <div class="text-muted" style="font-size:0.82rem; margin-top:0.25rem;">Create and review examination records</div>
+                </div>
+            </a>
+        </div>
+
+        <!-- ADMIN cards -->
+        <div class="col-sm-6 col-md-4" sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/patients}" class="text-decoration-none">
+                <div class="card h-100 text-center p-3" style="cursor:pointer; transition:box-shadow .15s;"
+                     onmouseover="this.style.boxShadow='0 4px 16px rgba(26,115,232,.18)'"
+                     onmouseout="this.style.boxShadow=''">
+                    <div style="font-size:2rem; margin-bottom:0.5rem;">&#128101;</div>
+                    <div class="fw-600" style="font-weight:600; color:#202124;">Patients</div>
+                    <div class="text-muted" style="font-size:0.82rem; margin-top:0.25rem;">Manage all patient records</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-sm-6 col-md-4" sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/doctors}" class="text-decoration-none">
+                <div class="card h-100 text-center p-3" style="cursor:pointer; transition:box-shadow .15s;"
+                     onmouseover="this.style.boxShadow='0 4px 16px rgba(26,115,232,.18)'"
+                     onmouseout="this.style.boxShadow=''">
+                    <div style="font-size:2rem; margin-bottom:0.5rem;">&#128084;</div>
+                    <div class="fw-600" style="font-weight:600; color:#202124;">Doctors</div>
+                    <div class="text-muted" style="font-size:0.82rem; margin-top:0.25rem;">Manage doctor profiles and assignments</div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-sm-6 col-md-4" sec:authorize="hasRole('ADMIN')">
+            <a th:href="@{/statistics}" class="text-decoration-none">
+                <div class="card h-100 text-center p-3" style="cursor:pointer; transition:box-shadow .15s;"
+                     onmouseover="this.style.boxShadow='0 4px 16px rgba(26,115,232,.18)'"
+                     onmouseout="this.style.boxShadow=''">
+                    <div style="font-size:2rem; margin-bottom:0.5rem;">&#128200;</div>
+                    <div class="fw-600" style="font-weight:600; color:#202124;">Statistics</div>
+                    <div class="text-muted" style="font-size:0.82rem; margin-top:0.25rem;">System-wide reports and analytics</div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+
+</section>
+</body>
+</html>

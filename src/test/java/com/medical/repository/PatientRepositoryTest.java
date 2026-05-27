@@ -57,7 +57,7 @@ class PatientRepositoryTest {
                 .isInsured(true)
                 .build());
 
-        // Patient with no personal doctor — should not appear in results
+      
         patientRepository.save(Patient.builder()
                 .name("Unassigned")
                 .egn("4444444444")
